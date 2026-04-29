@@ -126,9 +126,17 @@ export default function Home() {
             </button>
           </div>
           {error && (
-            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm md:text-base">{error}</span>
+            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl">
+              <div className="flex items-center gap-3 mb-2">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm md:text-base font-semibold">Error</span>
+              </div>
+              <p className="text-sm md:text-base ml-8">{error}</p>
+              {error.includes('blocking') && (
+                <p className="text-xs md:text-sm text-red-600 mt-2 ml-8">
+                  Note: YouTube permanently blocks cloud server IPs (Render, AWS, etc.). Consider deploying the backend on a residential IP or using a VPS with clean IP.
+                </p>
+              )}
             </div>
           )}
         </div>

@@ -106,7 +106,10 @@ def download_video():
                 'formats': formats + mp3_formats
             })
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        error_msg = str(e)
+        if 'Sign in to confirm' in error_msg or 'bot' in error_msg.lower():
+            error_msg = 'YouTube is blocking this server IP. Render/cloud IPs are permanently blocked by YouTube. Try using a different video URL or deploy on a residential IP.'
+        return jsonify({'error': error_msg}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
