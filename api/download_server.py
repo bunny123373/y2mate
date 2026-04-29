@@ -25,10 +25,24 @@ def download_video():
         if download:
             # Download video
             output_path = os.path.join(DOWNLOAD_FOLDER, f'{uuid.uuid4()}.%(ext)s')
-            ydl_opts = {
-                'outtmpl': output_path,
-                'format': format_id if not format_id.startswith('mp3') else f'-x --audio-format mp3',
-            }
+            
+            # Handle MP3 formats
+            if format_id.startswith('mp3'):
+                quality_map = {'mp3-128': '128K', 'mp3-192': '192K', 'mp3-320': '320K', 'mp3-best': 'best'}
+                ydl_opts = {
+                    'outtmpl': output_path,
+                    'format': 'bestaudio/best',
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': 'mp3',
+                        'preferredquality': quality_map.get(format_id, 'best'),
+                    }],
+                }
+            else:
+                ydl_opts = {
+                    'outtmpl': output_path,
+                    'format': format_id,
+                }
             
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
@@ -46,7 +60,7 @@ def download_video():
                 size_str = f'{filesize/1024/1024:.1f} MB' if filesize > 1048576 else f'{filesize/1024:.0f} KB' if filesize else 'Unknown'
                 formats.append({
                     'format_id': f['format_id'],
-                    'quality': f.get('format_note', str(f.get('height', 'audio')),
+                    'quality': f.get('format_note', str(f.get('height', 'audio'))),
                     'ext': f['ext'],
                     'filesize': size_str,
                     'type': 'audio' if f.get('vcodec') == 'none' else 'video'
