@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 // This route forwards requests to a Python backend
 // Deploy the Python backend separately on Railway/Render
-const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:5000';
+const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:10000';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,11 +22,13 @@ export async function POST(request: NextRequest) {
     });
     
     if (body.download) {
-      // Return the file blob
+      // Return the file blob with proper headers
       const blob = await response.blob();
-      return new NextResponse(blob, {
-        headers: response.headers,
-      });
+      const headers = new Headers();
+      headers.set('content-type', response.headers.get('content-type') || 'application/octet-stream');
+      headers.set('content-disposition', response.headers.get('content-disposition') || 'attachment');
+      
+      return new NextResponse(blob, { headers });
     } else {
       // Return JSON
       const data = await response.json();
