@@ -263,10 +263,6 @@ export default function Home() {
               </div>
             ))}
           </div>
-          
-          <div className="mt-8 bg-amber-50 border border-amber-200 p-4 rounded-xl text-sm text-amber-800">
-            <strong>Note:</strong> Downloads require yt-dlp (Python) installed. Deploy on Railway or Render for full functionality.
-          </div>
         )}
       </div>
 
