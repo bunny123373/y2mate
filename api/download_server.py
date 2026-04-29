@@ -77,7 +77,7 @@ def download_video():
             return jsonify({
                 'title': info.get('title'),
                 'thumbnail': info.get('thumbnail'),
-                'duration': info.get('duration'),
+                'duration': info.get('duration') or 0,
                 'formats': formats + mp3_formats
             })
     except Exception as e:

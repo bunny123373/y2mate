@@ -146,8 +146,7 @@ export default function Home() {
                     <div className="flex items-center justify-center sm:justify-start gap-4 md:gap-6 text-slate-600">
                       <span className="flex items-center gap-2">
                         <Clock className="w-4 h-4" />
-                        {Math.floor(parseInt(videoInfo.duration) / 60)}:
-                        {(parseInt(videoInfo.duration) % 60).toString().padStart(2, '0')}
+                        {videoInfo.duration ? `${Math.floor(videoInfo.duration / 60)}:${(videoInfo.duration % 60).toString().padStart(2, '0')}` : '0:00'}
                       </span>
                     </div>
                   </div>
