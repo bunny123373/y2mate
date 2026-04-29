@@ -55,15 +55,40 @@ def download_video():
                 info = ydl.extract_info(url, download=False)
                 
             formats = []
-            for f in info.get('formats', [])[:10]:
+            # Get video formats (with video codec)
+            video_formats = [f for f in info.get('formats', []) if f.get('vcodec') != 'none' and f.get('acodec') != 'none']
+            # Get audio-only formats
+            audio_formats = [f for f in info.get('formats', []) if f.get('vcodec') == 'none' and f.get('acodec') != 'none']
+            
+            # Add video formats (up to 8, prefer mp4)
+            seen_qualities = set()
+            for f in video_formats:
+                height = f.get('height', 0)
+                ext = f.get('ext', '')
+                if height not in seen_qualities and ext in ['mp4', 'webm']:
+                    filesize = f.get('filesize', 0)
+                    size_str = f'{filesize/1024/1024:.1f} MB' if filesize > 1048576 else f'{filesize/1024:.0f} KB' if filesize else 'Unknown'
+                    formats.append({
+                        'format_id': f['format_id'],
+                        'quality': f.get('format_note', f'{height}p'),
+                        'ext': ext,
+                        'filesize': size_str,
+                        'type': 'video'
+                    })
+                    seen_qualities.add(height)
+                if len(seen_qualities) >= 8:
+                    break
+            
+            # Add audio formats (mp4, webm, m4a)
+            for f in audio_formats[:4]:
                 filesize = f.get('filesize', 0)
                 size_str = f'{filesize/1024/1024:.1f} MB' if filesize > 1048576 else f'{filesize/1024:.0f} KB' if filesize else 'Unknown'
                 formats.append({
                     'format_id': f['format_id'],
-                    'quality': f.get('format_note', str(f.get('height', 'audio'))),
+                    'quality': f.get('format_note', 'audio'),
                     'ext': f['ext'],
                     'filesize': size_str,
-                    'type': 'audio' if f.get('vcodec') == 'none' else 'video'
+                    'type': 'audio'
                 })
             
             # Add MP3 options
