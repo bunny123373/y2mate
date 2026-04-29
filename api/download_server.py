@@ -22,6 +22,14 @@ def download_video():
         return jsonify({'error': 'No URL provided'}), 400
     
     try:
+        # Get proxy from env (optional)
+        proxy = os.environ.get('PROXY_URL', '')
+        
+        # Base options with optional proxy
+        base_opts = {'quiet': True}
+        if proxy:
+            base_opts['proxy'] = proxy
+        
         if download:
             # Download video
             output_path = os.path.join(DOWNLOAD_FOLDER, f'{uuid.uuid4()}.%(ext)s')
@@ -43,6 +51,7 @@ def download_video():
                     'outtmpl': output_path,
                     'format': format_id,
                 }
+            ydl_opts.update(base_opts)
             
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
@@ -51,7 +60,7 @@ def download_video():
             return send_file(filename, as_attachment=True)
         else:
             # Return video info
-            with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
+            with yt_dlp.YoutubeDL(base_opts) as ydl:
                 info = ydl.extract_info(url, download=False)
                 
             formats = []
