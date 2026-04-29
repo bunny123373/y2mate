@@ -22,23 +22,27 @@ def download_video():
         return jsonify({'error': 'No URL provided'}), 400
     
     try:
-        # Get proxy from env (optional)
         proxy = os.environ.get('PROXY_URL', '')
-        # Get cookies from env (optional, for YouTube authentication)
         cookies_path = os.environ.get('COOKIES_PATH', '')
+        cookies_b64 = os.environ.get('COOKIES_B64', '')
         
-        # Base options with optional proxy and cookies
         base_opts = {'quiet': True}
         if proxy:
             base_opts['proxy'] = proxy
+        
         if cookies_path and os.path.exists(cookies_path):
             base_opts['cookiefile'] = cookies_path
+        elif cookies_b64:
+            import base64
+            cookies_content = base64.b64decode(cookies_b64).decode('utf-8')
+            temp_cookies = os.path.join(DOWNLOAD_FOLDER, 'cookies.txt')
+            with open(temp_cookies, 'w') as f:
+                f.write(cookies_content)
+            base_opts['cookiefile'] = temp_cookies
         
         if download:
-            # Download video
             output_path = os.path.join(DOWNLOAD_FOLDER, f'{uuid.uuid4()}.%(ext)s')
             
-            # Handle MP3 formats
             if format_id.startswith('mp3'):
                 quality_map = {'mp3-128': '128K', 'mp3-192': '192K', 'mp3-320': '320K', 'mp3-best': 'best'}
                 ydl_opts = {
@@ -63,17 +67,13 @@ def download_video():
             
             return send_file(filename, as_attachment=True)
         else:
-            # Return video info
             with yt_dlp.YoutubeDL(base_opts) as ydl:
                 info = ydl.extract_info(url, download=False)
-                
+            
             formats = []
-            # Get video formats (with video codec)
             video_formats = [f for f in info.get('formats', []) if f.get('vcodec') != 'none' and f.get('acodec') != 'none']
-            # Get audio-only formats
             audio_formats = [f for f in info.get('formats', []) if f.get('vcodec') == 'none' and f.get('acodec') != 'none']
             
-            # Add video formats (up to 8, prefer mp4)
             seen_qualities = set()
             for f in video_formats:
                 height = f.get('height') or 0
@@ -92,7 +92,6 @@ def download_video():
                 if len(seen_qualities) >= 8:
                     break
             
-            # Add audio formats (mp4, webm, m4a)
             for f in audio_formats[:4]:
                 filesize = f.get('filesize') or 0
                 size_str = f'{filesize/1024/1024:.1f} MB' if filesize > 1048576 else f'{filesize/1024:.0f} KB' if filesize else 'Unknown'
@@ -104,7 +103,6 @@ def download_video():
                     'type': 'audio'
                 })
             
-            # Add MP3 options
             mp3_formats = [
                 {'format_id': 'mp3-128', 'quality': 'MP3 128k', 'ext': 'mp3', 'filesize': '~1 MB/min', 'type': 'audio'},
                 {'format_id': 'mp3-192', 'quality': 'MP3 192k', 'ext': 'mp3', 'filesize': '~1.5 MB/min', 'type': 'audio'},
@@ -121,7 +119,7 @@ def download_video():
     except Exception as e:
         error_msg = str(e)
         if 'Sign in to confirm' in error_msg or 'bot' in error_msg.lower():
-            error_msg = 'YouTube is blocking this server IP. Render/cloud IPs are permanently blocked by YouTube. Try using a different video URL or deploy on a residential IP.'
+            error_msg = 'YouTube is blocking this server IP. Use cookies: export from browser with extension, then set COOKIES_B64 env var.'
         return jsonify({'error': error_msg}), 500
 
 if __name__ == '__main__':
