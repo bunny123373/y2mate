@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  turbopack: {
+    root: process.platform === 'win32' ? 'D:\\yt-dlp\\nextjs-app' : undefined,
+  },
 };
 
 export default nextConfig;

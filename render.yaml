@@ -3,6 +3,7 @@ services:
     name: y2mate-backend
     env: python
     plan: starter
+    rootDir: nextjs-app
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn api.download_server:app
     envVars:
