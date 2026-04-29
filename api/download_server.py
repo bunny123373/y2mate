@@ -63,10 +63,10 @@ def download_video():
             # Add video formats (up to 8, prefer mp4)
             seen_qualities = set()
             for f in video_formats:
-                height = f.get('height', 0)
+                height = f.get('height') or 0
                 ext = f.get('ext', '')
-                if height not in seen_qualities and ext in ['mp4', 'webm']:
-                    filesize = f.get('filesize', 0)
+                if height and height not in seen_qualities and ext in ['mp4', 'webm']:
+                    filesize = f.get('filesize') or 0
                     size_str = f'{filesize/1024/1024:.1f} MB' if filesize > 1048576 else f'{filesize/1024:.0f} KB' if filesize else 'Unknown'
                     formats.append({
                         'format_id': f['format_id'],
@@ -81,7 +81,7 @@ def download_video():
             
             # Add audio formats (mp4, webm, m4a)
             for f in audio_formats[:4]:
-                filesize = f.get('filesize', 0)
+                filesize = f.get('filesize') or 0
                 size_str = f'{filesize/1024/1024:.1f} MB' if filesize > 1048576 else f'{filesize/1024:.0f} KB' if filesize else 'Unknown'
                 formats.append({
                     'format_id': f['format_id'],
