@@ -24,11 +24,15 @@ def download_video():
     try:
         # Get proxy from env (optional)
         proxy = os.environ.get('PROXY_URL', '')
+        # Get cookies from env (optional, for YouTube authentication)
+        cookies_path = os.environ.get('COOKIES_PATH', '')
         
-        # Base options with optional proxy
+        # Base options with optional proxy and cookies
         base_opts = {'quiet': True}
         if proxy:
             base_opts['proxy'] = proxy
+        if cookies_path and os.path.exists(cookies_path):
+            base_opts['cookiefile'] = cookies_path
         
         if download:
             # Download video
