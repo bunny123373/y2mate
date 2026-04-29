@@ -1,0 +1,50 @@
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Features Section */}
+        {!videoInfo && (
+          <div className="grid md:grid-cols-3 gap-6 mt-12">
+            {[
+              { 
+                icon: <Globe className="w-8 h-8 text-blue-600" />,
+                title: '1000+ Sites',
+                desc: 'YouTube, Twitter, Instagram, TikTok, and more'
+              },
+              { 
+                icon: <Video className="w-8 h-8 text-blue-600" />,
+                title: 'Multiple Formats',
+                desc: 'Choose from various quality options'
+              },
+              { 
+                icon: <Zap className="w-8 h-8 text-blue-600" />,
+                title: 'Fast & Free',
+                desc: 'No registration required, always free'
+              },
+            ].map((feature, i) => (
+              <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+                <div className="mb-4">{feature.icon}</div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
+                <p className="text-slate-600">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+      `}      </style>
+    </main>
+  );
+}
