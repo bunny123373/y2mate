@@ -71,7 +71,7 @@ def download_video():
                 info = ydl.extract_info(url, download=False)
             
             formats = []
-            video_formats = [f for f in info.get('formats', []) if f.get('vcodec') != 'none' and f.get('acodec') != 'none']
+            video_formats = [f for f in info.get('formats', []) if f.get('vcodec') != 'none']
             audio_formats = [f for f in info.get('formats', []) if f.get('vcodec') == 'none' and f.get('acodec') != 'none']
             
             seen_qualities = set()

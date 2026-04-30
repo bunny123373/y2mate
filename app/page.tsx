@@ -21,6 +21,7 @@ export default function Home() {
         body: JSON.stringify({ url }),
       });
       const data = await res.json();
+      console.log('API Response:', data);
       if (!res.ok) throw new Error(data.error);
       setVideoInfo(data);
     } catch (err: any) {
