@@ -20,9 +20,14 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
       });
-      const data = await res.json();
-      console.log('API Response:', data);
-      if (!res.ok) throw new Error(data.error);
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error('Invalid response from server: ' + text.substring(0, 100));
+      }
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch video info');
       setVideoInfo(data);
     } catch (err: any) {
       setError(err.message);
