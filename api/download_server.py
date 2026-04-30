@@ -23,22 +23,10 @@ def download_video():
     
     try:
         proxy = os.environ.get('PROXY_URL', '')
-        cookies_path = os.environ.get('COOKIES_PATH', '')
-        cookies_b64 = os.environ.get('COOKIES_B64', '')
         
         base_opts = {'quiet': True}
         if proxy:
             base_opts['proxy'] = proxy
-        
-        if cookies_path and os.path.exists(cookies_path):
-            base_opts['cookiefile'] = cookies_path
-        elif cookies_b64:
-            import base64
-            cookies_content = base64.b64decode(cookies_b64).decode('utf-8')
-            temp_cookies = os.path.join(DOWNLOAD_FOLDER, 'cookies.txt')
-            with open(temp_cookies, 'w') as f:
-                f.write(cookies_content)
-            base_opts['cookiefile'] = temp_cookies
         
         if download:
             output_path = os.path.join(DOWNLOAD_FOLDER, f'{uuid.uuid4()}.%(ext)s')
