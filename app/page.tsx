@@ -138,11 +138,6 @@ export default function Home() {
                 <span className="text-sm md:text-base font-semibold">Error</span>
               </div>
               <p className="text-sm md:text-base ml-8">{error}</p>
-              {error.includes('blocking') && (
-                <p className="text-xs md:text-sm text-red-600 mt-2 ml-8">
-                  Note: YouTube permanently blocks cloud server IPs (Render, AWS, etc.). Consider deploying the backend on a residential IP or using a VPS with clean IP.
-                </p>
-              )}
             </div>
           )}
         </div>

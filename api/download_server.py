@@ -118,8 +118,6 @@ def download_video():
             })
     except Exception as e:
         error_msg = str(e)
-        if 'Sign in to confirm' in error_msg or 'bot' in error_msg.lower():
-            error_msg = 'YouTube is blocking this server IP. Use cookies: export from browser with extension, then set COOKIES_B64 env var.'
         return jsonify({'error': error_msg}), 500
 
 if __name__ == '__main__':
